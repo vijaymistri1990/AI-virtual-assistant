@@ -2,11 +2,12 @@ import express from "express";
 import cors from "cors";
 import cookieParser from "cookie-parser";
 import dotenv from 'dotenv'
+import connectDB from "./db/db.js"
 
 dotenv.config()
 
 const app = express();
-const port = process.env.PORT || 6000
+
 app.use(express.json())
 app.use(cors({
     origin: ["http://localhost:5173"]
@@ -20,6 +21,10 @@ app.get('/', (req, res) => {
 })
 
 
-app.listen(port, ()=>{
-    console.log("server is running on port " + port)
+connectDB()
+.then(app.listen(process.env.PORT||6000, ()=>{
+    console.log(`App is Listning on port ${process.env.PORT || 6000}`)
+}))
+.catch((error)=>{
+    console.log('MongDB Connection Failed',error)
 })
