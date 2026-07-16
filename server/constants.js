@@ -1,1 +1,1 @@
-export const DB_NAME = 'Virtual-assistant';
+export const DB_NAME = 'virtual-assistant';
