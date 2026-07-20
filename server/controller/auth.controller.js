@@ -5,33 +5,31 @@ import { User } from "../models/user.model.js";
 
 
 export const googleAuth = asyncHandler(async (req, res) => {
-    const {name,email}= req.body
+    const {name, email} = req.body;
 
-    if(!name || email){
-        throw new ApiError(400, "name and email are required")
+    if (!name || !email) {
+        throw new ApiError(400, "name and email are required");
     }
 
-    let user = await User.findOne({email})
+    let user = await User.findOne({email});
 
-    if(user){
-        throw new ApiError(400,"user already exists")
+    if (!user) {
+        user = await User.create({name, email});
     }
 
-    const newUser = await User.create({name,email})
-
-    const token = newUser.generateAccessToken(newUser._id)
+    const token = user.generateAccessToken();
 
     const options = {
         httpOnly: true,
-        secure:false,
-        sameSite:"strict",
-        maxAge:1000*60*60*24*7  // 7 days
-    }
+        secure: false,
+        sameSite: "strict",
+        maxAge: 1000 * 60 * 60 * 24 * 7 // 7 days
+    };
     return res
-    .status(200)
-    .cookie("token", token, options)
-    .json(new ApiResponse(200, {newUser,token},"User Registered successfully"))
-})
+        .status(200)
+        .cookie("token", token, options)
+        .json(new ApiResponse(200, {user, token}, "User authenticated successfully"));
+});
 
 export const logout = asyncHandler(async(req,res)=>{
     const options = {
