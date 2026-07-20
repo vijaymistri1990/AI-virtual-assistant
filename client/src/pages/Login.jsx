@@ -6,7 +6,7 @@ import { auth, provider } from '../utils/Firebase';
 import { BASE_URL } from '../utils/Constants';
 import { useNavigate } from 'react-router-dom';
 
-const Login = () => {
+const Login = ({setUser}) => {
     const navigate = useNavigate()
     const Features=[
         {
@@ -39,8 +39,7 @@ const handleLogin = async()=>{
             name:displayName,
             email
         },{withCredentials:true})
-
-        console.log(res.data)
+        setUser(res.data.data)
         navigate('/')
     } catch (error) {
         console.log(error)
