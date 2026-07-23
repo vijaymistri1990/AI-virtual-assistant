@@ -1,4 +1,5 @@
 import mongoose from "mongoose";
+import jwt from "jsonwebtoken";
 
 const pageSchema = new mongoose.Schema({
     name: String,
