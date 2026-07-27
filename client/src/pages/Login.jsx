@@ -39,7 +39,7 @@ const handleLogin = async()=>{
             name:displayName,
             email
         },{withCredentials:true})
-        setUser(res.data.data)
+        setUser(res?.data?.data)
         navigate('/')
     } catch (error) {
         console.log(error)
