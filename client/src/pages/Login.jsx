@@ -5,6 +5,7 @@ import { signInWithPopup } from 'firebase/auth';
 import { auth, provider } from '../utils/Firebase';
 import { BASE_URL } from '../utils/Constants';
 import { useNavigate } from 'react-router-dom';
+import toast from 'react-hot-toast';
 
 const Login = ({setUser}) => {
     const navigate = useNavigate()
@@ -39,10 +40,12 @@ const handleLogin = async()=>{
             name:displayName,
             email
         },{withCredentials:true})
-        setUser(res?.data?.data)
+        setUser(res?.data?.data?.user)
+        toast.success("Logged in successfully")
         navigate('/')
     } catch (error) {
         console.log(error)
+        toast.error("Failed to login")
     }
 }
 
