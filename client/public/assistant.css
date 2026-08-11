@@ -1,0 +1,240 @@
+.sana-assistant-wrapper {
+  /* Default Dark Theme Variables */
+  --bg-color: #0f121b;
+  --text-title: #ffffff;
+  --text-desc: #9ca3af;
+  --accent-text: #28cdb1;
+  --grad-start: #a35cf5;
+  --grad-end: #21d0a5;
+  --shadow-color: rgba(0, 0, 0, 0.5);
+  --border-color: rgba(255, 255, 255, 0.05);
+  --widget-bg: #0f121b;
+  --widget-shadow: rgba(163, 92, 245, 0.4);
+
+  position: fixed;
+  bottom: 24px;
+  right: 24px;
+  z-index: 999999;
+  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif, "Apple Color Emoji", "Segoe UI Emoji", "Segoe UI Symbol";
+}
+
+/* Light Theme Variables */
+.sana-assistant-wrapper.theme-light {
+  --bg-color: #f4f9ff;
+  --text-title: #0f172a;
+  --text-desc: #4b5563;
+  --accent-text: #3b82f6;
+  --grad-start: #38bdf8;
+  --grad-end: #a78bfa;
+  --shadow-color: rgba(0, 0, 0, 0.15);
+  --border-color: rgba(0, 0, 0, 0.05);
+  --widget-bg: #ffffff;
+  --widget-shadow: rgba(56, 189, 248, 0.4);
+}
+
+/* Neon Theme Variables */
+.sana-assistant-wrapper.theme-neon {
+  --bg-color: #090014;
+  --text-title: #ffffff;
+  --text-desc: #d8b4fe;
+  --accent-text: #f0abfc;
+  --grad-start: #f43f5e;
+  --grad-end: #8b5cf6;
+  --shadow-color: rgba(244, 63, 94, 0.25);
+  --border-color: rgba(244, 63, 94, 0.5);
+  --widget-bg: #090014;
+  --widget-shadow: rgba(244, 63, 94, 0.6);
+}
+
+/* Glass Theme Variables */
+.sana-assistant-wrapper.theme-glass {
+  --bg-color: rgba(255, 255, 255, 0.35);
+  --text-title: #0f121b;
+  --text-desc: #4b5563;
+  --accent-text: #a35cf5;
+  --grad-start: rgba(163, 92, 245, 0.9);
+  --grad-end: rgba(33, 208, 165, 0.9);
+  --shadow-color: rgba(31, 38, 135, 0.15);
+  --border-color: rgba(255, 255, 255, 0.6);
+  --widget-bg: rgba(255, 255, 255, 0.4);
+  --widget-shadow: rgba(31, 38, 135, 0.2);
+  --glass-blur: 20px;
+}
+
+.sana-widget-btn {
+  width: 64px;
+  height: 64px;
+  border-radius: 50%;
+  cursor: pointer;
+  box-shadow: 0 6px 16px rgba(0,0,0,0.25);
+  transition: transform 0.25s cubic-bezier(0.16, 1, 0.3, 1), box-shadow 0.25s ease;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: var(--widget-bg);
+  backdrop-filter: blur(var(--glass-blur, 0px));
+  -webkit-backdrop-filter: blur(var(--glass-blur, 0px));
+  margin-left: auto;
+  padding: 6px;
+  box-sizing: border-box;
+}
+
+.sana-widget-btn:hover {
+  transform: scale(1.05) translateY(-2px);
+  box-shadow: 0 8px 24px rgba(0,0,0,0.3);
+}
+
+.sana-widget-btn-inner {
+  width: 100%;
+  height: 100%;
+  border-radius: 50%;
+  background: linear-gradient(145deg, var(--grad-start), var(--grad-end));
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  box-shadow: inset 0 2px 4px rgba(255,255,255,0.2);
+}
+
+.sana-popup {
+  position: absolute;
+  bottom: 84px;
+  right: 0;
+  width: 340px;
+  height: 540px;
+  border-radius: 28px;
+  opacity: 0;
+  pointer-events: none;
+  transform: translateY(20px) scale(0.95);
+  transform-origin: bottom right;
+  transition: all 0.3s cubic-bezier(0.16, 1, 0.3, 1);
+  overflow: hidden;
+  display: flex;
+  flex-direction: column;
+  background: var(--bg-color);
+  color: var(--text-title);
+  box-shadow: 0 20px 50px var(--shadow-color);
+  border: 1px solid var(--border-color);
+  backdrop-filter: blur(var(--glass-blur, 0px));
+  -webkit-backdrop-filter: blur(var(--glass-blur, 0px));
+}
+
+.sana-popup.sana-popup-open {
+  opacity: 1;
+  pointer-events: auto;
+  transform: translateY(0) scale(1);
+}
+
+.sana-popup-content {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  padding: 40px 24px;
+  text-align: center;
+}
+
+.sana-top-gradient-circle {
+  width: 100px;
+  height: 100px;
+  border-radius: 50%;
+  background: linear-gradient(145deg, var(--grad-start), var(--grad-end));
+  margin-top: 10px;
+  margin-bottom: 30px;
+}
+
+.sana-assistant-title {
+  font-family: Georgia, serif;
+  font-size: 26px;
+  font-weight: 700;
+  margin: 0 0 16px 0;
+  letter-spacing: -0.5px;
+  color: var(--text-title);
+}
+
+.sana-assistant-desc {
+  font-size: 15px;
+  line-height: 1.6;
+  margin: 0 0 30px 0;
+  color: var(--text-desc);
+}
+
+.sana-tap-to-speak {
+  color: var(--accent-text);
+  font-size: 16px;
+  font-weight: 600;
+  margin-top: auto;
+  margin-bottom: 20px;
+}
+
+.sana-mic-btn {
+  width: 72px;
+  height: 72px;
+  border-radius: 50%;
+  background: linear-gradient(145deg, var(--grad-start), var(--grad-end));
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  color: white;
+  box-shadow: 0 4px 20px var(--widget-shadow);
+  transition: transform 0.25s cubic-bezier(0.16, 1, 0.3, 1), box-shadow 0.25s ease;
+}
+
+.sana-mic-btn:hover {
+  transform: scale(1.08);
+  box-shadow: 0 6px 25px var(--widget-shadow);
+}
+
+.sana-mic-btn svg {
+  width: 28px;
+  height: 28px;
+}
+
+/* Responsive Styles for Mobile */
+@media (max-width: 480px) {
+  .sana-assistant-wrapper {
+    bottom: 16px;
+    right: 16px;
+  }
+  
+  .sana-popup {
+    position: fixed;
+    bottom: 90px;
+    right: 16px;
+    width: 300px;
+    height: 440px;
+    max-height: calc(100vh - 120px);
+    border-radius: 24px;
+    transform-origin: bottom right;
+  }
+  
+  .sana-popup-content {
+    padding: 30px 20px;
+  }
+  
+  .sana-assistant-title {
+    font-size: 22px;
+  }
+  
+  .sana-assistant-desc {
+    font-size: 14px;
+    margin-bottom: 24px;
+  }
+  
+  .sana-top-gradient-circle {
+    width: 80px;
+    height: 80px;
+    margin-bottom: 20px;
+  }
+  
+  .sana-mic-btn {
+    width: 64px;
+    height: 64px;
+  }
+}
+
+/* General bounds to prevent overflow on small screens above 480px */
+.sana-popup {
+  max-width: calc(100vw - 48px);
+  max-height: calc(100vh - 120px);
+}
