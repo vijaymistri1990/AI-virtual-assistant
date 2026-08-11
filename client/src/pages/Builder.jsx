@@ -40,6 +40,18 @@ export const Builder = ({ user }) => {
     name: "navigationPages",
   });
 
+  const remainingMessages =
+    Math.max(0, user?.requestLimit || 0) - (user?.totalMessages || 0);
+
+  const remainingDays = user?.proExpiresAt
+    ? Math.max(
+        0,
+        Math.ceil(
+          (new Date(user?.proExpiresAt) - new Date()) / (1000 * 60 * 60 * 24),
+        ),
+      )
+    : null;
+
   const onSubmit = async (data) => {
     try {
       const payload = {
@@ -80,6 +92,8 @@ export const Builder = ({ user }) => {
     }
   };
 
+  const embadeCode = `<script src="${BASE_URL}/assistant.js" data-user-id="${user?._id}"></script>`;
+
   return (
     <div className="min-h-screen bg-[#F6F8F9] p-8 flex justify-center font-sans">
       <div className="max-w-4xl w-full">
@@ -93,13 +107,108 @@ export const Builder = ({ user }) => {
         </div>
         {user.isSetupComplate && !editAssistant && (
           <div className="bg-white p-8 rounded-3xl shadow-sm border border-gray-100 mb-8">
-            <p className="text-[14px] text-gray-400 mb-2">Assistant</p>
-            <h2 className="text-[26px] font-bold text-[#111827] mb-2">
+            <p className="text-[14px] text-gray-400 mb-1">Assistant</p>
+            <h2 className="text-[28px] font-bold text-[#111827] mb-2">
               {user?.assistantName || "Dora AI"}
             </h2>
-            <p className="text-[#6B7280] text-[15px]">
+            <p className="text-[#6B7280] text-[15px] mb-6">
               Your assistant is ready to use on your website.
             </p>
+
+            <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+              <div className="bg-[#F8F9FA] p-5 rounded-2xl">
+                <p className="text-[13px] text-gray-400 mb-1">Current Plan</p>
+                <p className="text-[18px] font-bold text-[#111827]">
+                  {user?.plan
+                    ? user.plan.charAt(0).toUpperCase() + user.plan.slice(1)
+                    : "Free"}
+                </p>
+              </div>
+              <div className="bg-[#F8F9FA] p-5 rounded-2xl">
+                <p className="text-[13px] text-gray-400 mb-1">Gemini Status</p>
+                <p
+                  className={`text-[18px] font-bold ${user?.geminiApiKey ? "text-[#059669]" : "text-red-500"}`}
+                >
+                  {user?.geminiApiKey ? "Active" : "Inactive"}
+                </p>
+              </div>
+              <div className="bg-[#F8F9FA] p-5 rounded-2xl">
+                <p className="text-[13px] text-gray-400 mb-1">
+                  {user?.plan == "free" ? "Message Left" : "Remaining Days"}
+                </p>
+                <p className="text-[18px] font-bold text-[#111827]">
+                  {user?.plan === "free" ? remainingMessages : remainingDays}
+                </p>
+              </div>
+            </div>
+
+            <div className="bg-[#FFFDF4] p-8 rounded-3xl border border-[#FDE68A] mt-8">
+              <h3 className="text-[#92400E] font-medium mb-3">
+                Where to paste this script?
+              </h3>
+              <p className="text-[#B45309] text-[15px] mb-6">
+                Paste this script before the closing &lt;/body&gt; tag of your
+                website HTML file.
+              </p>
+
+              <p className="text-[#B45309] text-[15px] mb-3">Example:</p>
+
+              <div className="bg-[#0B1221] rounded-2xl p-6 font-mono text-[15px] leading-relaxed overflow-x-auto">
+                <div className="text-[#34D399]">&lt;body&gt;</div>
+                <div className="pl-8 py-5 text-[#34D399]">
+                  Your Website Content
+                </div>
+                <div className="pl-8 break-all text-[#34D399]">
+                  &lt;script src="{BASE_URL}/assistant.js" data-user-id="
+                  {user?._id}"&gt;&lt;/script&gt;
+                </div>
+                <div className="text-[#34D399] pt-5">&lt;/body&gt;</div>
+              </div>
+            </div>
+
+            <div className="mt-8">
+              <h3 className="text-[15px] font-bold text-gray-800 mb-3">
+                Embed Code
+              </h3>
+              <div className="bg-[#0B1221] rounded-2xl p-4 flex items-center justify-between gap-4">
+                <code className="text-[#34D399] text-[14px] break-all font-mono">
+                  {embadeCode}
+                </code>
+                <button
+                  onClick={() => {
+                    navigator.clipboard.writeText(embadeCode);
+                    toast.success("Copied to clipboard!");
+                  }}
+                  className="bg-white p-2.5 rounded-xl hover:bg-gray-100 transition-colors shrink-0 flex items-center justify-center shadow-sm"
+                  title="Copy to clipboard"
+                >
+                  <svg
+                    xmlns="http://www.w3.org/2000/svg"
+                    width="18"
+                    height="18"
+                    viewBox="0 0 24 24"
+                    fill="none"
+                    stroke="currentColor"
+                    strokeWidth="2"
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                    className="text-gray-800"
+                  >
+                    <rect width="14" height="14" x="8" y="8" rx="2" ry="2" />
+                    <path d="M4 16c-1.1 0-2-.9-2-2V4c0-1.1.9-2 2-2h10c1.1 0 2 .9 2 2" />
+                  </svg>
+                </button>
+              </div>
+            </div>
+
+            <div className="mt-8 text-left">
+              <button
+                onClick={() => setEditAssistant(true)}
+                className="px-6 py-2.5 bg-linear-to-r from-[#a35cf5] to-[#21d0a5] text-white font-medium rounded-xl hover:opacity-90 transition-opacity"
+              >
+                Edit Assistant
+              </button>
+            </div>
           </div>
         )}
         {editAssistant && (
@@ -307,20 +416,21 @@ export const Builder = ({ user }) => {
                   {fields.map((field, index) => (
                     <div
                       key={field.id}
-                      className="flex items-center justify-between p-5 rounded-2xl border border-gray-100 bg-white"
+                      className="flex items-center p-4 rounded-2xl border border-gray-100 bg-white gap-4"
                     >
-                      <div>
-                        <h4 className="font-bold text-gray-800 text-[15px]">
-                          {field.name || "Unnamed Page"}
-                        </h4>
-                        <p className="text-gray-400 text-sm mt-0.5">
-                          {field.url || "/"}
-                        </p>
+                      <div className="flex-1 font-bold text-gray-800 text-[15px] px-2">
+                        {field.name || "Unnamed Page"}
+                      </div>
+                      <div className="flex-1 text-gray-500 text-[15px] px-2 border-l border-gray-100">
+                        {field.url || "/"}
+                      </div>
+                      <div className="flex-1 text-gray-400 text-sm px-2 border-l border-gray-100">
+                        {field.keywords || "No keywords"}
                       </div>
                       <button
                         type="button"
                         onClick={() => remove(index)}
-                        className="p-2 text-[#e57373] hover:bg-red-50 rounded-xl transition-colors"
+                        className="p-2 text-[#e57373] hover:bg-red-50 rounded-xl transition-colors shrink-0"
                         title="Remove Page"
                       >
                         <svg
