@@ -66,7 +66,7 @@ const Navbar = ({ user, setUser }) => {
               </defs>
             </svg>
             <span className="text-xl font-bold text-gray-700 tracking-tight">
-              Shifra{" "}
+              Sana{" "}
               <span className="text-transparent bg-clip-text bg-linear-to-r from-purple-500 to-teal-400">
                 AI
               </span>
