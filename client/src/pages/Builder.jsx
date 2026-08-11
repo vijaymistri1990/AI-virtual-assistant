@@ -2,7 +2,7 @@ import { useState } from "react";
 import { useForm, useFieldArray } from "react-hook-form";
 import axios from "axios";
 import toast from "react-hot-toast";
-import { BASE_URL } from "../utils/Constants";
+import { BASE_URL, CLIENT_URL } from "../utils/Constants";
 
 export const Builder = ({ user }) => {
   const [newPage, setNewPage] = useState({ name: "", url: "", keywords: "" });
@@ -92,7 +92,7 @@ export const Builder = ({ user }) => {
     }
   };
 
-  const embadeCode = `<script src="${BASE_URL}/assistant.js" data-user-id="${user?._id}"></script>`;
+  const embadeCode = `<script src="${CLIENT_URL}/assistant.js" data-user-id="${user?._id}"></script>`;
 
   return (
     <div className="min-h-screen bg-[#F6F8F9] p-8 flex justify-center font-sans">
@@ -159,7 +159,7 @@ export const Builder = ({ user }) => {
                   Your Website Content
                 </div>
                 <div className="pl-8 break-all text-[#34D399]">
-                  &lt;script src="{BASE_URL}/assistant.js" data-user-id="
+                  &lt;script src="{CLIENT_URL}/assistant.js" data-user-id="
                   {user?._id}"&gt;&lt;/script&gt;
                 </div>
                 <div className="text-[#34D399] pt-5">&lt;/body&gt;</div>
