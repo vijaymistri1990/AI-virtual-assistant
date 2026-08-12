@@ -13,7 +13,7 @@ export const Builder = ({ user }) => {
     formState: { errors, isSubmitting },
   } = useForm({
     defaultValues: {
-      assistantName: user?.assistantName || "Shifra",
+      assistantName: user?.assistantName || "Sana",
       businessName: user?.businessName || "",
       businessType: user?.businessType || "",
       businessDescription: user?.businessDescription || "",

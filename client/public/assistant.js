@@ -1,10 +1,10 @@
 (function () {
   const script = document.currentScript;
-  //   const userId = script.dataset.userId;
+  const userId = script.dataset.userId;
 
   // We can fetch user config later using userId, for now using default
   const theme = "dark";
-  const assistantConfig = null;
+  let assistantConfig = null;
   const assistantName = assistantConfig?.assistantName || "Sana";
 
   const scriptUrl = new URL(script.src);
@@ -68,4 +68,24 @@
       popup.classList.remove("sana-popup-open");
     }
   });
+
+  //losd assistant
+
+  const loadAssistant = async () => {
+    try {
+      const res = await fetch(
+        `http://localhost:5500/api/v1/assistant/assistant-config/${userId}`,
+      );
+
+      const data = await res.json();
+      if (data.success) {
+        assistantConfig = data.user;
+        console.log("data>>>>>>>>", data);
+      }
+    } catch (error) {
+      console.log(error);
+    }
+  };
+
+  loadAssistant();
 })();
