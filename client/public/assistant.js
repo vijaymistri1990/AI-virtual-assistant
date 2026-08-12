@@ -78,12 +78,33 @@
       );
 
       const data = await res.json();
+      console.log(">>>>>>>>>", data);
       if (data.success) {
         assistantConfig = data.user;
-        console.log("data>>>>>>>>", data);
+        applyConfig();
       }
     } catch (error) {
       console.log(error);
+    }
+  };
+
+  const applyConfig = () => {
+    if (!assistantConfig) return;
+
+    // Apply theme
+    popup.className = `sana-popup theme-${assistantConfig.theme || "dark"}`;
+    container.className = `sana-assistant-wrapper theme-${assistantConfig.theme || "dark"}`;
+
+    const title = popup.querySelector(".sana-assistant-title");
+    const desc = popup.querySelector(".sana-assistant-desc");
+
+    if (title && assistantConfig.assistantName) {
+      title.textContent = `Hello! I'm ${assistantConfig.assistantName} AI`;
+    }
+
+    // Only update description if greetingMsg is defined in config
+    if (desc && assistantConfig.greetingMsg) {
+      desc.innerHTML = assistantConfig.greetingMsg;
     }
   };
 
