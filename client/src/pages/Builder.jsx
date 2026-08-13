@@ -4,7 +4,7 @@ import axios from "axios";
 import toast from "react-hot-toast";
 import { BASE_URL, CLIENT_URL } from "../utils/Constants";
 
-export const Builder = ({ user }) => {
+export const Builder = ({ user, setUser }) => {
   const [newPage, setNewPage] = useState({ name: "", url: "", keywords: "" });
   const {
     register,
@@ -54,6 +54,16 @@ export const Builder = ({ user }) => {
 
   const onSubmit = async (data) => {
     try {
+      const allPages = [...fields];
+      if (newPage.name || newPage.url || newPage.keywords) {
+        allPages.push({
+          name: newPage.name,
+          url: newPage.url,
+          keywords: newPage.keywords
+        });
+        setNewPage({ name: "", url: "", keywords: "" });
+      }
+
       const payload = {
         assistantName: data.assistantName,
         businessName: data.businessName,
@@ -65,7 +75,7 @@ export const Builder = ({ user }) => {
             ? "proffetional"
             : data.assistantTone.toLowerCase(),
         geminiApiKey: data.geminiApiKey,
-        pages: fields.map((page) => ({
+        pages: allPages.map((page) => ({
           name: page.name,
           path: page.url,
           keywords:
@@ -84,6 +94,7 @@ export const Builder = ({ user }) => {
 
       if (res.data.success) {
         toast.success(res.data.message || "Assistant saved successfully");
+        setUser(res.data.data);
       }
       setEditAssistant(false);
     } catch (error) {
