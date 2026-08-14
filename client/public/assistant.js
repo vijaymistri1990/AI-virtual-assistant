@@ -109,4 +109,183 @@
   };
 
   loadAssistant();
+
+  //element
+  const status = popup.querySelector(".sana-status") || popup.querySelector(".sana-tap-to-speak");
+  const wave = popup.querySelector(".sana-wave");
+  const aiText = popup.querySelector(".sana-ai-text") || popup.querySelector(".sana-assistant-desc");
+  const userText = popup.querySelector(".sana-user-text");
+  const micBtn = popup.querySelector(".sana-mic-btn");
+
+  //text-speech conversion
+  const speak = (text) => {
+    window.speechSynthesis.cancel();
+
+    //stop any current speech
+    if (speechSynthesis.speaking) {
+      speechSynthesis.cancel();
+    }
+    if (aiText) aiText.innerText = text;
+    if (status) status.innerText = "AI is speaking...";
+    if (wave) wave.classList.add("wave-active");
+
+    const utterance = new SpeechSynthesisUtterance(text);
+
+    utterance.lang = "hi-IN";
+    utterance.pitch = 1;
+    utterance.rate = 1;
+    utterance.volume = 1;
+
+    utterance.onend = () => {
+      if (status) status.innerText = "Tap button to speak";
+      if (wave) wave.classList.remove("wave-active");
+    };
+
+    utterance.onerror = (event) => {
+      if (status) status.innerText = "Error speaking";
+      if (wave) wave.style.opacity = "0";
+      console.error(event);
+    };
+
+    if (assistantConfig?.voice) {
+      const voices = speechSynthesis.getVoices();
+      const selectedVoice = voices.find(
+        (v) => v.name === assistantConfig.voice,
+      );
+      if (selectedVoice) {
+        utterance.voice = selectedVoice;
+      }
+    }
+
+    speechSynthesis.speak(utterance);
+  };
+
+  // call assistant API
+  const askServer = async (userMessage) => {
+    try {
+      if (status) status.innerText = "Thinking...";
+      const res = await fetch(`http://localhost:5500/api/v1/assistant/ask-assistant`, {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json"
+        },
+        body: JSON.stringify({
+          message: userMessage,
+          userId: userId,
+          currentPath: window.location.pathname
+        })
+      });
+
+      const data = await res.json();
+      if (data.success) {
+        if (data.action === "navigate") {
+          speak(data.response || data.text);
+          setTimeout(() => {
+            window.location.href = data.path;
+          }, 2000);
+        } else {
+          speak(data.text);
+        }
+      } else {
+        const errorMsg = data.message || "Something went wrong";
+        if (status) status.innerText = errorMsg;
+        speak(errorMsg);
+      }
+    } catch (error) {
+      console.error("Error communicating with assistant server:", error);
+      if (status) status.innerText = "Error getting response";
+    }
+  };
+
+  // speech recognition setup
+  const speechRecognition = window.speechRecognition || window.webkitSpeechRecognition;
+  if (speechRecognition) {
+    const recognizer = new speechRecognition();
+
+    recognizer.lang = "hi-IN";
+    recognizer.interimResults = false;
+    recognizer.continuous = false;
+
+    let isListening = false;
+
+    micBtn.onclick = () => {
+      // Cancel speech synthesis if it's currently speaking
+      if (window.speechSynthesis.speaking) {
+        window.speechSynthesis.cancel();
+      }
+
+      if (isListening) {
+        recognizer.stop();
+      } else {
+        if (wave) wave.style.opacity = "1";
+        if (status) status.innerText = "Listening...";
+        if (userText) userText.innerText = "";
+        if (aiText) aiText.innerText = "";
+        recognizer.start();
+      }
+    };
+
+    recognizer.onstart = () => {
+      isListening = true;
+    };
+
+    recognizer.onresult = (event) => {
+      const transcript = event.results[0][0].transcript;
+      if (userText) userText.innerText = transcript;
+      if (aiText && !userText) {
+        aiText.innerText = `You: "${transcript}"`;
+      }
+      askServer(transcript);
+    };
+
+    recognizer.onerror = (event) => {
+      let message = "Error recognizing speech";
+      
+      switch (event.error) {
+        case "network":
+          message = "Network error. Check connection or browser compatibility.";
+          break;
+        case "not-allowed":
+        case "permission-blocked":
+          message = "Microphone access blocked. Allow it in settings.";
+          break;
+        case "no-speech":
+          message = "No speech detected. Tap mic to try again.";
+          break;
+        case "audio-capture":
+          message = "No microphone found. Please connect one.";
+          break;
+        case "service-not-allowed":
+          message = "Speech service not allowed by browser settings.";
+          break;
+      }
+
+      if (status) status.innerText = message;
+      if (wave) wave.style.opacity = "0";
+      console.error("Speech recognition error:", event.error, event);
+      isListening = false;
+
+      // Revert status to default after a delay so the user knows they can retry
+      setTimeout(() => {
+        if (status && !isListening && status.innerText === message) {
+          status.innerText = "Tap button to speak";
+        }
+      }, 4000);
+    };
+
+    recognizer.onend = () => {
+      isListening = false;
+      if (status && status.innerText === "Listening...") {
+        status.innerText = "Tap button to speak";
+      }
+      if (wave) wave.classList.remove("wave-active");
+    };
+  } else {
+    if (micBtn) {
+      micBtn.onclick = () => {
+        console.warn("Speech recognition is not supported in this browser.");
+        if (status) status.innerText = "Speech recognition unsupported";
+      };
+    }
+  }
 })();

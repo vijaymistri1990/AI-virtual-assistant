@@ -1,5 +1,6 @@
 import { asyncHandler } from "../utils/asyncHandler.js";
 import { User } from "../models/user.model.js";
+import { generateGeminiResponse } from "../utils/Gemin.js";
 
 export const getAssistantConfig = asyncHandler(async (req, res) => {
   const userId = req.params.userId;
@@ -83,6 +84,14 @@ export const askAssistant = asyncHandler(async (req, res) =>{
             });
         }
 
+        const prompt = `You are the ${user.assistantName}, a smart virtual assistant for ${user.businessName}.
+        You should answer questions about the business and provide helpful information.
+        The user wants to navigate to one of the following pages:
+        ${matchPages.map(p=>`- ${p.name} (${p.path})`).join("\n")}
+        Ask the user to select a page or provide a response and suggested page if applicable.
+        Do not add any extra information.
+        Keep your response short and concise.`
+
         const pageNames = matchPages.map(p => p.name);
         
         return res.json({
@@ -96,5 +105,44 @@ export const askAssistant = asyncHandler(async (req, res) =>{
     }
   }
 
+  const prompt = `
+You are ${user.assistantName}.
+
+Business Name:
+${user.businessName}
+
+Business Type:
+${user.businessType}
+
+Business Description:
+${user.businessDescription}
+
+Assistant Tone:
+${user.tone}
+
+Rules:
+
+- Keep replies under 15 words
+- Give fast direct responses
+- Talk naturally
+- Behave like smart voice assistant
+- Avoid long explanations
+- Keep responses short for quick voice playback
+
+User Question:
+\${message}
+`;
+
+  const responseText = await generateGeminiResponse({ prompt, user,geminiApiKey: user.geminiApiKey });
+
+  if(user.plan !== 'pro'){
+    user.totalMessages += 1;
+    await user.save();
+  }
   
+
+  return res.json({
+    success:true,
+    text: responseText
+  });
 })
