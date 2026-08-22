@@ -243,7 +243,16 @@
       
       switch (event.error) {
         case "network":
-          message = "Network error. Check connection or browser compatibility.";
+          if (recognizer.lang === "hi-IN") {
+            console.warn("Network error with hi-IN, falling back to en-US...");
+            recognizer.lang = "en-US";
+            // Wait a brief moment before retrying
+            setTimeout(() => {
+              if (isListening) recognizer.start();
+            }, 500);
+            return; // Exit out of the error handler so we don't reset the UI
+          }
+          message = "Network error. Disable ad-blockers/VPN, or use Google Chrome.";
           break;
         case "not-allowed":
         case "permission-blocked":
